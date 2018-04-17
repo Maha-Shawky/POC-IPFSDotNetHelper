@@ -1,8 +1,4 @@
-﻿//https://ipfs.io/docs/getting-started/
-//https://github.com/TrekDev/net-ipfs-api/blob/master/src/Ipfs/Commands/IpfsRoot.cs
-//https://github.com/richardschneider/net-ipfs-api/blob/master/src/CoreApi/KeyApi.cs
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -104,7 +100,8 @@ namespace IPFSLocalNetwork
                 var dr = openFileDialog1.ShowDialog();
                 if(dr == DialogResult.OK)
                 {
-                    string hash = await nodeManager.AddFileAsync(openFileDialog1.FileName);
+                    var pin = chck_pin_upload_file.Checked;
+                    string hash = await nodeManager.AddFileAsync(openFileDialog1.FileName, pin);
                     txt_upload_file_hash.Text = hash;
                 }
 
@@ -119,7 +116,8 @@ namespace IPFSLocalNetwork
                 var dr = folderBrowserDialog1.ShowDialog();
                 if (dr == DialogResult.OK)
                 {
-                    string hash = await nodeManager.AddDirectoryAsync(folderBrowserDialog1.SelectedPath);
+                    var pin = chck_pin_upload_dir.Checked;
+                    string hash = await nodeManager.AddDirectoryAsync(folderBrowserDialog1.SelectedPath, pin);
                     txt_upload_directory_hash.Text = hash;
                 }
             }
@@ -131,11 +129,11 @@ namespace IPFSLocalNetwork
             try
             {
                 DialogResult dr = saveFileDialog1.ShowDialog();
+                var pin = chck_pin_download.Checked;
                 if (dr == DialogResult.OK)
                 {
-                    var stream = await nodeManager.GetFileAsync(txt_download_hash.Text, chck_pin_file.Checked);
-                   // stream.w
-                   //TODO
+                    await nodeManager.DownloadFileAsync(txt_download_hash.Text, saveFileDialog1.FileName, pin);
+
                 }
             }
             catch (Exception ex) { HandleException(ex); }

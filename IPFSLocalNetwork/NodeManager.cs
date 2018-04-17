@@ -1,5 +1,10 @@
-﻿using Ipfs;
+﻿//https://ipfs.io/docs/getting-started/
+///////https://github.com/TrekDev/net-ipfs-api/blob/master/src/Ipfs/Commands/IpfsRoot.cs
+//https://github.com/richardschneider/net-ipfs-api/blob/master/src/CoreApi/KeyApi.cs
+
+using Ipfs;
 using Ipfs.Api;
+using Ipfs.CoreApi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +26,7 @@ namespace IPFSLocalNetwork
         }
 
         #region private key //TODO
-       // private string _ipfsInitPath => read init path variable;
+        // private string _ipfsInitPath => read init path variable;
         public void SetPrivateKey(string privateKey)
         {
             throw new NotImplementedException();
@@ -46,10 +51,10 @@ namespace IPFSLocalNetwork
         public async void KillNodeAsync()
         {
             await Ipfs.ShutdownAsync();
-            if (_daemonProcess != null)
-            {
-                _daemonProcess.Kill();
-            }
+            //if (_daemonProcess != null)
+            //{
+            //    _daemonProcess.Kill();
+            //}
         }
         public Task<Peer> GetInfo()
         {
@@ -58,28 +63,56 @@ namespace IPFSLocalNetwork
         #endregion
 
         #region files
-        public async Task<string> AddFileAsync(string path)
+        public async Task<string> AddFileAsync(string path, bool pin)
         {
-            var task = await Ipfs.FileSystem.AddFileAsync(path);
+            var task = await Ipfs.FileSystem.AddFileAsync(path, new AddFileOptions { Pin = pin });
             return task.Id.Hash.ToString();
 
         }
 
-        public async Task<string> AddDirectoryAsync(string path)
+        string MakeTemp()
         {
-            var task = await Ipfs.FileSystem.AddDirectoryAsync(path);
+            var temp = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var x = Path.Combine(temp, "x");
+            var xy = Path.Combine(x, "y");
+            Directory.CreateDirectory(temp);
+            Directory.CreateDirectory(x);
+            Directory.CreateDirectory(xy);
+
+            File.WriteAllText(Path.Combine(temp, "alpha.txt"), "alpha");
+            File.WriteAllText(Path.Combine(temp, "beta.txt"), "beta");
+            File.WriteAllText(Path.Combine(x, "x.txt"), "x");
+            File.WriteAllText(Path.Combine(xy, "y.txt"), "y");
+            return temp;
+        }
+
+        //public async Task<IFileSystemNode> AddDirectoryAsync2()
+        //{
+        //    var temp = MakeTemp();
+        //    return await Ipfs.FileSystem.AddDirectoryAsync(temp, true);
+        //}
+
+
+        public async Task<string> AddDirectoryAsync(string path, bool pin)
+        {
+            var task = await Ipfs.FileSystem.AddDirectoryAsync(path, true, new AddFileOptions { Pin = pin });
             return task.Id.Hash.ToString();
 
         }
 
-        public async Task<Stream> GetFileAsync(string ipfsPath, bool pin)
+        public async Task DownloadFileAsync(string ipfsPath, string path, bool pin)
         {
-            var stream = await Ipfs.FileSystem.ReadFileAsync(ipfsPath);
-            if (pin)
+            using (var stream = await Ipfs.FileSystem.ReadFileAsync(ipfsPath))
             {
-                //TODO
+                using (var fileStream = File.Create(path))
+                {
+                    stream.CopyTo(fileStream);
+                    if (pin)
+                    {
+                        await Ipfs.Pin.AddAsync(ipfsPath);
+                    }
+                }
             }
-            return stream;
         }
         #endregion
 
