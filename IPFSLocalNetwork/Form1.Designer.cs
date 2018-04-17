@@ -64,6 +64,7 @@
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.chck_pin_upload_dir = new System.Windows.Forms.CheckBox();
             this.chck_pin_upload_file = new System.Windows.Forms.CheckBox();
+            this.btn_clear_unpinned = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.grid_Log)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -169,6 +170,7 @@
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.btn_clear_unpinned);
             this.tabPage6.Controls.Add(this.chck_pin_upload_file);
             this.tabPage6.Controls.Add(this.chck_pin_upload_dir);
             this.tabPage6.Controls.Add(this.txt_upload_directory_hash);
@@ -449,6 +451,16 @@
             this.chck_pin_upload_file.Text = "Pin ";
             this.chck_pin_upload_file.UseVisualStyleBackColor = true;
             // 
+            // btn_clear_unpinned
+            // 
+            this.btn_clear_unpinned.Location = new System.Drawing.Point(288, 222);
+            this.btn_clear_unpinned.Name = "btn_clear_unpinned";
+            this.btn_clear_unpinned.Size = new System.Drawing.Size(176, 42);
+            this.btn_clear_unpinned.TabIndex = 9;
+            this.btn_clear_unpinned.Text = "Clear unpinned";
+            this.btn_clear_unpinned.UseVisualStyleBackColor = true;
+            this.btn_clear_unpinned.Click += new System.EventHandler(this.btn_clear_unpinned_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -512,6 +524,7 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.CheckBox chck_pin_upload_file;
         private System.Windows.Forms.CheckBox chck_pin_upload_dir;
+        private System.Windows.Forms.Button btn_clear_unpinned;
     }
 }
 

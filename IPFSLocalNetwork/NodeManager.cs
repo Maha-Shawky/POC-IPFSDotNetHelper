@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IPFSLocalNetwork
@@ -63,35 +64,11 @@ namespace IPFSLocalNetwork
         #endregion
 
         #region files
-        public async Task<string> AddFileAsync(string path, bool pin)
+        public async Task<string> AddFileAsync( string filePath, bool pin)
         {
-            var task = await Ipfs.FileSystem.AddFileAsync(path, new AddFileOptions { Pin = pin });
+            var task = await Ipfs.FileSystem.AddFileAsync(filePath, new AddFileOptions { Pin = pin });
             return task.Id.Hash.ToString();
-
         }
-
-        string MakeTemp()
-        {
-            var temp = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            var x = Path.Combine(temp, "x");
-            var xy = Path.Combine(x, "y");
-            Directory.CreateDirectory(temp);
-            Directory.CreateDirectory(x);
-            Directory.CreateDirectory(xy);
-
-            File.WriteAllText(Path.Combine(temp, "alpha.txt"), "alpha");
-            File.WriteAllText(Path.Combine(temp, "beta.txt"), "beta");
-            File.WriteAllText(Path.Combine(x, "x.txt"), "x");
-            File.WriteAllText(Path.Combine(xy, "y.txt"), "y");
-            return temp;
-        }
-
-        //public async Task<IFileSystemNode> AddDirectoryAsync2()
-        //{
-        //    var temp = MakeTemp();
-        //    return await Ipfs.FileSystem.AddDirectoryAsync(temp, true);
-        //}
-
 
         public async Task<string> AddDirectoryAsync(string path, bool pin)
         {
@@ -100,6 +77,11 @@ namespace IPFSLocalNetwork
 
         }
 
+        public async Task<IFileSystemNode> GetFileInfoAsync(string ipfsPath)
+        {
+            return await Ipfs.FileSystem.ListFileAsync(ipfsPath);
+        }
+        
         public async Task DownloadFileAsync(string ipfsPath, string path, bool pin)
         {
             using (var stream = await Ipfs.FileSystem.ReadFileAsync(ipfsPath))
@@ -113,6 +95,12 @@ namespace IPFSLocalNetwork
                     }
                 }
             }
+        }
+
+        public async Task ClearUnPinned()
+        {
+            await Ipfs.DoCommandAsync("repo/gc", default(CancellationToken));
+            
         }
         #endregion
 

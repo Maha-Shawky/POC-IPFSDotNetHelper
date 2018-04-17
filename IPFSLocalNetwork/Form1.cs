@@ -98,7 +98,7 @@ namespace IPFSLocalNetwork
             try
             {
                 var dr = openFileDialog1.ShowDialog();
-                if(dr == DialogResult.OK)
+                if (dr == DialogResult.OK)
                 {
                     var pin = chck_pin_upload_file.Checked;
                     string hash = await nodeManager.AddFileAsync(openFileDialog1.FileName, pin);
@@ -128,11 +128,15 @@ namespace IPFSLocalNetwork
         {
             try
             {
+                string ipfsPath = txt_download_hash.Text;
+
+                //var nodeInfo = await nodeManager.GetFileInfoAsync(ipfsPath);
+
                 DialogResult dr = saveFileDialog1.ShowDialog();
                 var pin = chck_pin_download.Checked;
                 if (dr == DialogResult.OK)
                 {
-                    await nodeManager.DownloadFileAsync(txt_download_hash.Text, saveFileDialog1.FileName, pin);
+                    await nodeManager.DownloadFileAsync(ipfsPath, saveFileDialog1.FileName, pin);
 
                 }
             }
@@ -182,7 +186,7 @@ namespace IPFSLocalNetwork
                 list_bootstrap.Items.Add(peer);
             }
         }
-        private  void btn_listBootstrap_Click(object sender, EventArgs e)
+        private void btn_listBootstrap_Click(object sender, EventArgs e)
         {
             try
             {
@@ -244,5 +248,15 @@ namespace IPFSLocalNetwork
             catch (Exception ex) { HandleException(ex); }
         }
         #endregion
+
+        private async void btn_clear_unpinned_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await nodeManager.ClearUnPinned();
+
+            }
+            catch (Exception ex) { HandleException(ex); }
+        }
     }
 }
