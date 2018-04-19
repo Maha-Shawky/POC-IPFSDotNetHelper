@@ -5,12 +5,14 @@
 using Ipfs;
 using Ipfs.Api;
 using Ipfs.CoreApi;
+using IPFSLocalNetwork.Progress;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using static IPFSLocalNetwork.Progress.FileStreamWithProgress;
 
 namespace IPFSLocalNetwork
 {
@@ -38,37 +40,79 @@ namespace IPFSLocalNetwork
         }
         #endregion
 
+        #region IPSNS //TODO
+        //var x = await Ipfs.Name.PublishAsync("");
+        //https://decentralized.blog/ten-terrible-attempts-to-make-ipfs-human-friendly.html
+        #endregion
+
         #region node
         public void InitRepo()
         {
+            // return Ipfs.DoCommandAsync("init", default(CancellationToken));
+
             var processInfo = new ProcessStartInfo(_ipfsEXEPath, "init");
-            _daemonProcess = Process.Start(processInfo);
+            Process.Start(processInfo);
         }
-        public void RunNode()
+        public void RunNode(bool offlineMode = false)
         {
-            var processInfo = new ProcessStartInfo(_ipfsEXEPath, "daemon");
+            var processInfo = new ProcessStartInfo(_ipfsEXEPath, offlineMode ? "daemon --offline" : "daemon");
             _daemonProcess = Process.Start(processInfo);
+
         }
-        public async void KillNodeAsync()
+        public async Task KillNode()
         {
-            await Ipfs.ShutdownAsync();
-            //if (_daemonProcess != null)
+            //var ipfsProcesses = Process.GetProcessesByName(_daemonProcess.ProcessName);
+            //foreach (var process in ipfsProcesses)
+            //{
+            //    process.Kill();
+            //
+        //}
+            ////Ipfs.ShutdownAsync().Wait();
+            //if (ipfsProcess != null)
             //{
             //    _daemonProcess.Kill();
             //}
+
+            try
+            {
+                await Ipfs.ShutdownAsync();
+            }catch(Exception e)
+            {
+
+            }
         }
         public Task<Peer> GetInfo()
         {
             return Ipfs.IdAsync();
         }
+
+        public  Task<string> Getstate()
+        {
+            if (_daemonProcess == null)
+                return Task.FromResult( string.Empty);
+
+            return Ipfs.DoCommandAsync("stats/bw", default(CancellationToken));
+        }
         #endregion
 
         #region files
-        public async Task<string> AddFileAsync( string filePath, bool pin)
+
+
+        public async Task<string> AddFileAsync(string filePath, bool pin, DownloadProgressDelegate progressCallBack)
         {
-            var task = await Ipfs.FileSystem.AddFileAsync(filePath, new AddFileOptions { Pin = pin });
-            return task.Id.Hash.ToString();
+            using (var fileStream = new FileStreamWithProgress(filePath, FileMode.Open, FileAccess.Read))
+            {
+                fileStream.SetTotalLength(fileStream.Length);
+                fileStream.SetCaption("upload progress");
+                fileStream.ProgressCallBack += progressCallBack;
+                var task = await Ipfs.FileSystem.AddAsync(fileStream, Path.GetFileName(filePath), new AddFileOptions { Pin = pin });
+                fileStream.ProgressCallBack = null;
+                return task.Id.Hash.ToString();
+            }
+            //    var task = await Ipfs.FileSystem.AddAsync(filePath, new AddFileOptions { Pin = pin });
+            //return task.Id.Hash.ToString();
         }
+
 
         public async Task<string> AddDirectoryAsync(string path, bool pin)
         {
@@ -81,7 +125,7 @@ namespace IPFSLocalNetwork
         {
             return await Ipfs.FileSystem.ListFileAsync(ipfsPath);
         }
-        
+
         public async Task DownloadFileAsync(string ipfsPath, string path, bool pin)
         {
             using (var stream = await Ipfs.FileSystem.ReadFileAsync(ipfsPath))
@@ -100,20 +144,20 @@ namespace IPFSLocalNetwork
         public async Task ClearUnPinned()
         {
             await Ipfs.DoCommandAsync("repo/gc", default(CancellationToken));
-            
         }
         #endregion
 
         #region peers
         public Task<IEnumerable<Peer>> ListPeersAsync()
         {
+
             return Ipfs.Swarm.PeersAsync();
         }
 
-        public void AddBootStrapPeer(string peerId)
-        {
-            // ipfsClient.Bootstrap.AddAsync()
-        }
+        //public void AddBootStrapPeer(string peerId)
+        //{
+        //    ipfsClient.Bootstrap.AddAsync();
+        //}
 
         public Task<IEnumerable<MultiAddress>> ListBootStraAsync()
         {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ByteSizeLib;
+using IPFSLocalNetwork.Progress;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -24,6 +26,7 @@ namespace IPFSLocalNetwork
         #region Form
         private void Form1_Load(object sender, EventArgs e)
         {
+            rich_txt_stat.Font = new System.Drawing.Font("Arial", 14);
             // nodeManager.RunNode();
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -53,7 +56,7 @@ namespace IPFSLocalNetwork
         {
             try
             {
-                nodeManager.RunNode();
+                nodeManager.RunNode(chck_run_offline.Checked);
             }
             catch (Exception ex) { HandleException(ex); }
 
@@ -63,7 +66,7 @@ namespace IPFSLocalNetwork
         {
             try
             {
-                nodeManager.KillNodeAsync();
+                nodeManager.KillNode();
             }
             catch (Exception ex) { HandleException(ex); }
         }
@@ -93,6 +96,12 @@ namespace IPFSLocalNetwork
         #endregion
 
         #region Files
+
+        private void UpdateProgress(StreamingProgressData progress)
+        {
+            lbl_uplaod_progress.Invoke(new Action(() => lbl_uplaod_progress.Text = $"{progress.progressPercentage}%"));
+        }
+
         private async void btn_upload_Click(object sender, EventArgs e)
         {
             try
@@ -100,8 +109,11 @@ namespace IPFSLocalNetwork
                 var dr = openFileDialog1.ShowDialog();
                 if (dr == DialogResult.OK)
                 {
+                    lbl_uplaod_progress.Text = string.Empty;
+                    txt_upload_file_hash.Text = string.Empty;
+
                     var pin = chck_pin_upload_file.Checked;
-                    string hash = await nodeManager.AddFileAsync(openFileDialog1.FileName, pin);
+                    string hash = await nodeManager.AddFileAsync(openFileDialog1.FileName, pin, UpdateProgress);
                     txt_upload_file_hash.Text = hash;
                 }
 
@@ -149,8 +161,8 @@ namespace IPFSLocalNetwork
         {
             try
             {
-                var peers = await nodeManager.ListPeersAsync();
                 list_peers.Items.Clear();
+                var peers = await nodeManager.ListPeersAsync();
                 foreach (var peer in peers)
                 {
                     list_peers.Items.Add(peer);
@@ -179,8 +191,8 @@ namespace IPFSLocalNetwork
         #region bootstrap
         private async void ResetBootStrap()
         {
-            var bootstrap = await nodeManager.ListBootStraAsync();
             list_bootstrap.Items.Clear();
+            var bootstrap = await nodeManager.ListBootStraAsync();
             foreach (var peer in bootstrap)
             {
                 list_bootstrap.Items.Add(peer);
@@ -257,6 +269,41 @@ namespace IPFSLocalNetwork
 
             }
             catch (Exception ex) { HandleException(ex); }
+        }
+
+        private double FromDynamicBytesToKillos(dynamic bytes)
+        {
+            return Math.Round(ByteSize.FromBytes((double)bytes).KiloBytes,2);
+        }
+        private async void timer1_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                var statAsStr  = await nodeManager.Getstate();
+                dynamic statAsObj = Newtonsoft.Json.JsonConvert.DeserializeObject(statAsStr);
+                if (statAsObj != null)
+                {
+                    var totalIn = FromDynamicBytesToKillos(statAsObj.TotalIn);
+                    var totalOut = FromDynamicBytesToKillos(statAsObj.TotalOut);
+                    var rateIn = FromDynamicBytesToKillos(statAsObj.RateIn);
+                    var rateOut = FromDynamicBytesToKillos(statAsObj.RateOut);
+
+                    var text = $"Total in = {totalIn} kB \nTotal out = {totalOut} kB \nRange in = {rateIn} kB\\s \nRange out = {rateOut} kB\\s";
+                    rich_txt_stat.Text = text;
+                    //var count = chart_state.Series["TotalIn"].Points.Count;
+                    //if (chart_state.Series["TotalIn"].Points.Count > 5)
+                    //{
+                    //    chart_state.Series["TotalIn"].Points.RemoveAt(0);
+                    //}
+
+                    //chart_state.Series["TotalIn"].Points.AddXY(count, TotalIn);
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 }
