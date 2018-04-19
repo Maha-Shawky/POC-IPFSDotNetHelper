@@ -71,6 +71,7 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
             this.lbl_uplaod_progress = new System.Windows.Forms.Label();
+            this.lbl_Downlaod_progress = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.grid_Log)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -188,6 +189,7 @@
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.lbl_Downlaod_progress);
             this.tabPage6.Controls.Add(this.lbl_uplaod_progress);
             this.tabPage6.Controls.Add(this.label1);
             this.tabPage6.Controls.Add(this.btn_clear_unpinned);
@@ -513,6 +515,15 @@
             this.lbl_uplaod_progress.TabIndex = 11;
             this.lbl_uplaod_progress.Text = "label2";
             // 
+            // lbl_Downlaod_progress
+            // 
+            this.lbl_Downlaod_progress.AutoSize = true;
+            this.lbl_Downlaod_progress.Location = new System.Drawing.Point(607, 151);
+            this.lbl_Downlaod_progress.Name = "lbl_Downlaod_progress";
+            this.lbl_Downlaod_progress.Size = new System.Drawing.Size(35, 13);
+            this.lbl_Downlaod_progress.TabIndex = 12;
+            this.lbl_Downlaod_progress.Text = "label2";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -583,6 +594,7 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label lbl_uplaod_progress;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lbl_Downlaod_progress;
     }
 }
 

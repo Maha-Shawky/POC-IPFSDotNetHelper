@@ -126,19 +126,30 @@ namespace IPFSLocalNetwork
             return await Ipfs.FileSystem.ListFileAsync(ipfsPath);
         }
 
-        public async Task DownloadFileAsync(string ipfsPath, string path, bool pin)
+        public async Task DownloadFileAsync(string ipfsPath, string path, bool pin , DownloadProgressDelegate progressCallBack)
         {
+            var fileInfo = await GetFileInfoAsync(ipfsPath);
             using (var stream = await Ipfs.FileSystem.ReadFileAsync(ipfsPath))
             {
-                using (var fileStream = File.Create(path))
+                using (var fileStream = new FileStreamWithProgress(path , FileMode.Create))//File.Create(path))
                 {
+                    fileStream.SetTotalLength(fileInfo.Size);
+                    fileStream.ProgressCallBack += progressCallBack;
                     stream.CopyTo(fileStream);
+
+                    fileStream.ProgressCallBack = null;
+
                     if (pin)
                     {
                         await Ipfs.Pin.AddAsync(ipfsPath);
                     }
                 }
             }
+        }
+
+        internal Task DownloadFileAsync(string ipfsPath, string fileName, bool pin, object updateDownloadProgress)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task ClearUnPinned()

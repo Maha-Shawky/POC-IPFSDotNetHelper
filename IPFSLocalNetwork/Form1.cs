@@ -97,11 +97,14 @@ namespace IPFSLocalNetwork
 
         #region Files
 
-        private void UpdateProgress(StreamingProgressData progress)
+        private void UpdateUploadProgress(StreamingProgressData progress)
         {
             lbl_uplaod_progress.Invoke(new Action(() => lbl_uplaod_progress.Text = $"{progress.progressPercentage}%"));
         }
-
+        private void UpdateDownloadProgress(StreamingProgressData progress)
+        {
+            lbl_Downlaod_progress.Invoke(new Action(() => lbl_Downlaod_progress.Text = $"{progress.progressPercentage}%"));
+        }
         private async void btn_upload_Click(object sender, EventArgs e)
         {
             try
@@ -113,7 +116,7 @@ namespace IPFSLocalNetwork
                     txt_upload_file_hash.Text = string.Empty;
 
                     var pin = chck_pin_upload_file.Checked;
-                    string hash = await nodeManager.AddFileAsync(openFileDialog1.FileName, pin, UpdateProgress);
+                    string hash = await nodeManager.AddFileAsync(openFileDialog1.FileName, pin, UpdateUploadProgress);
                     txt_upload_file_hash.Text = hash;
                 }
 
@@ -141,6 +144,7 @@ namespace IPFSLocalNetwork
             try
             {
                 string ipfsPath = txt_download_hash.Text;
+                lbl_Downlaod_progress.Text = string.Empty;
 
                 //var nodeInfo = await nodeManager.GetFileInfoAsync(ipfsPath);
 
@@ -148,7 +152,7 @@ namespace IPFSLocalNetwork
                 var pin = chck_pin_download.Checked;
                 if (dr == DialogResult.OK)
                 {
-                    await nodeManager.DownloadFileAsync(ipfsPath, saveFileDialog1.FileName, pin);
+                    await nodeManager.DownloadFileAsync(ipfsPath, saveFileDialog1.FileName, pin, UpdateDownloadProgress);
 
                 }
             }
