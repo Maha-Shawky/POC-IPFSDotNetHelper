@@ -2,6 +2,7 @@
 using IPFSLocalNetwork.Progress;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace IPFSLocalNetwork
@@ -124,20 +125,6 @@ namespace IPFSLocalNetwork
             catch (Exception ex) { HandleException(ex); }
 
         }
-        private async void btn_upload_directory_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var dr = folderBrowserDialog1.ShowDialog();
-                if (dr == DialogResult.OK)
-                {
-                    var pin = chck_pin_upload_dir.Checked;
-                    string hash = await nodeManager.AddDirectoryAsync(folderBrowserDialog1.SelectedPath, pin);
-                    txt_upload_directory_hash.Text = hash;
-                }
-            }
-            catch (Exception ex) { HandleException(ex); }
-        }
 
         private async void btn_Download_Click(object sender, EventArgs e)
         {
@@ -146,15 +133,68 @@ namespace IPFSLocalNetwork
                 string ipfsPath = txt_download_hash.Text;
                 lbl_Downlaod_progress.Text = string.Empty;
 
-                //var nodeInfo = await nodeManager.GetFileInfoAsync(ipfsPath);
 
+                var nodeInfo = await nodeManager.GetFileInfoAsync(ipfsPath);
+
+                var fileHash = ipfsPath;
+                var fileName = "";
+                var fileSize = nodeInfo.Size;
+                if (nodeInfo.IsDirectory)
+                {
+                    var file = nodeInfo.Links.FirstOrDefault();
+                    if (file == null)
+                    {
+                        MessageBox.Show("File is not exist");
+                        return;
+                    }
+                    // fileHash = $"{ipfsPath}/{file.Name}"; //file.Id.Hash.ToString();
+                    fileName = file.Name;
+                    fileSize = file.Size;
+                }
+
+                saveFileDialog1.FileName = fileName;
                 DialogResult dr = saveFileDialog1.ShowDialog();
                 var pin = chck_pin_download.Checked;
                 if (dr == DialogResult.OK)
                 {
-                    await nodeManager.DownloadFileAsync(ipfsPath, saveFileDialog1.FileName, pin, UpdateDownloadProgress);
+                    await nodeManager.DownloadFileAsync(fileHash, saveFileDialog1.FileName, fileSize, pin, UpdateDownloadProgress);
 
                 }
+            }
+            catch (Exception ex) { HandleException(ex); }
+        }
+
+        private async void btn_list_local_files_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                grid_files.Rows.Clear();
+                var filesInfo = await nodeManager.ListAllFiles();
+                foreach (var info in filesInfo)
+                {
+                    grid_files.Rows.Add(info.ParentId, info.Id, info.Name, info.Size);
+                }
+
+
+            }
+            catch (Exception ex) { HandleException(ex); }
+        }
+
+        private async void grid_files_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                var senderGrid = (DataGridView)sender;
+
+                if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                    e.RowIndex >= 0)
+                {
+                    var fileHash = senderGrid.Rows[e.RowIndex].Cells["ParentId"].Value.ToString();
+                     await nodeManager.RemoveFile(fileHash);
+                    //TODO - Button Clicked - Execute Code Here
+                }
+
             }
             catch (Exception ex) { HandleException(ex); }
         }
@@ -188,6 +228,15 @@ namespace IPFSLocalNetwork
             }
             catch (Exception ex) { HandleException(ex); }
 
+        }
+        private async void btn_peer_connect_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await nodeManager.ConnectToPeerAsync(txt_peerAddress.Text);
+
+            }
+            catch (Exception ex) { HandleException(ex); }
         }
 
         #endregion
@@ -277,13 +326,13 @@ namespace IPFSLocalNetwork
 
         private double FromDynamicBytesToKillos(dynamic bytes)
         {
-            return Math.Round(ByteSize.FromBytes((double)bytes).KiloBytes,2);
+            return Math.Round(ByteSize.FromBytes((double)bytes).KiloBytes, 2);
         }
         private async void timer1_Tick(object sender, EventArgs e)
         {
             try
             {
-                var statAsStr  = await nodeManager.Getstate();
+                var statAsStr = await nodeManager.Getstate();
                 dynamic statAsObj = Newtonsoft.Json.JsonConvert.DeserializeObject(statAsStr);
                 if (statAsObj != null)
                 {
@@ -294,14 +343,6 @@ namespace IPFSLocalNetwork
 
                     var text = $"Total in = {totalIn} kB \nTotal out = {totalOut} kB \nRange in = {rateIn} kB\\s \nRange out = {rateOut} kB\\s";
                     rich_txt_stat.Text = text;
-                    //var count = chart_state.Series["TotalIn"].Points.Count;
-                    //if (chart_state.Series["TotalIn"].Points.Count > 5)
-                    //{
-                    //    chart_state.Series["TotalIn"].Points.RemoveAt(0);
-                    //}
-
-                    //chart_state.Series["TotalIn"].Points.AddXY(count, TotalIn);
-
                 }
 
             }

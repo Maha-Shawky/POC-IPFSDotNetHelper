@@ -10,12 +10,20 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using static IPFSLocalNetwork.Progress.FileStreamWithProgress;
 
 namespace IPFSLocalNetwork
 {
+    public class IPFSFileInfo
+    {
+        public string Id { get; set; }
+        public string ParentId { get; set; }
+        public string Name { get; set; }
+        public long Size { get; set; }
+    }
     public class NodeManager
     {
         private string _nodeUrl;
@@ -61,22 +69,12 @@ namespace IPFSLocalNetwork
         }
         public async Task KillNode()
         {
-            //var ipfsProcesses = Process.GetProcessesByName(_daemonProcess.ProcessName);
-            //foreach (var process in ipfsProcesses)
-            //{
-            //    process.Kill();
-            //
-        //}
-            ////Ipfs.ShutdownAsync().Wait();
-            //if (ipfsProcess != null)
-            //{
-            //    _daemonProcess.Kill();
-            //}
 
             try
             {
                 await Ipfs.ShutdownAsync();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
 
             }
@@ -86,10 +84,10 @@ namespace IPFSLocalNetwork
             return Ipfs.IdAsync();
         }
 
-        public  Task<string> Getstate()
+        public Task<string> Getstate()
         {
             if (_daemonProcess == null)
-                return Task.FromResult( string.Empty);
+                return Task.FromResult(string.Empty);
 
             return Ipfs.DoCommandAsync("stats/bw", default(CancellationToken));
         }
@@ -105,12 +103,11 @@ namespace IPFSLocalNetwork
                 fileStream.SetTotalLength(fileStream.Length);
                 fileStream.SetCaption("upload progress");
                 fileStream.ProgressCallBack += progressCallBack;
-                var task = await Ipfs.FileSystem.AddAsync(fileStream, Path.GetFileName(filePath), new AddFileOptions { Pin = pin });
+                var task = await Ipfs.FileSystem.AddAsync(fileStream, Path.GetFileName(filePath), new AddFileOptions { Pin = pin, Wrap = true });
                 fileStream.ProgressCallBack = null;
                 return task.Id.Hash.ToString();
+
             }
-            //    var task = await Ipfs.FileSystem.AddAsync(filePath, new AddFileOptions { Pin = pin });
-            //return task.Id.Hash.ToString();
         }
 
 
@@ -120,20 +117,14 @@ namespace IPFSLocalNetwork
             return task.Id.Hash.ToString();
 
         }
-
-        public async Task<IFileSystemNode> GetFileInfoAsync(string ipfsPath)
+        public async Task DownloadFileAsync(string ipfsPath, string path, long fileSize, bool pin, DownloadProgressDelegate progressCallBack)
         {
-            return await Ipfs.FileSystem.ListFileAsync(ipfsPath);
-        }
-
-        public async Task DownloadFileAsync(string ipfsPath, string path, bool pin , DownloadProgressDelegate progressCallBack)
-        {
-            var fileInfo = await GetFileInfoAsync(ipfsPath);
+            // using (var stream = await Ipfs.DownloadAsync("object/get", default(CancellationToken), ipfsPath))
             using (var stream = await Ipfs.FileSystem.ReadFileAsync(ipfsPath))
             {
-                using (var fileStream = new FileStreamWithProgress(path , FileMode.Create))//File.Create(path))
+                using (var fileStream = new FileStreamWithProgress(path, FileMode.Create))//File.Create(path))
                 {
-                    fileStream.SetTotalLength(fileInfo.Size);
+                    fileStream.SetTotalLength(fileSize);
                     fileStream.ProgressCallBack += progressCallBack;
                     stream.CopyTo(fileStream);
 
@@ -147,14 +138,57 @@ namespace IPFSLocalNetwork
             }
         }
 
-        internal Task DownloadFileAsync(string ipfsPath, string fileName, bool pin, object updateDownloadProgress)
+        public async Task<IFileSystemNode> GetFileInfoAsync(string ipfsPath)
         {
-            throw new NotImplementedException();
+            return await Ipfs.FileSystem.ListFileAsync(ipfsPath);
         }
 
-        public async Task ClearUnPinned()
+        public async Task<IEnumerable<IPFSFileInfo>> ListAllFiles()
         {
-            await Ipfs.DoCommandAsync("repo/gc", default(CancellationToken));
+            var json = await Ipfs.DoCommandAsync("refs/local", default(CancellationToken));
+            var matchList = Regex.Matches(json, "\"Ref\":\"([\\w]*)");
+
+            var filesInfo = new List<IPFSFileInfo>();
+            foreach (Match match in matchList)
+            {
+                var refHash = match.Groups[1]?.Value;
+                if (refHash == null)
+                    continue;
+                try
+                {
+                    var file = await GetFileInfoAsync(refHash);
+                    if (file.IsDirectory)
+                    {
+                        foreach (var link in file.Links)
+                        {
+
+                            var fileInfo = new IPFSFileInfo
+                            {
+                                Id = link.Id.Hash.ToString(),
+                                ParentId = file.Id.Hash.ToString(),
+                                Name = link.Name,
+                                Size = link.Size,
+                            };
+                            filesInfo.Add(fileInfo);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+            return filesInfo;
+        }
+
+        public async Task RemoveFile(string ipfsPath)
+        {
+            await Ipfs.Pin.RemoveAsync(ipfsPath);
+            await ClearUnPinned();
+        }
+        public Task ClearUnPinned()
+        {
+              return Ipfs.DoCommandAsync("repo/gc", default(CancellationToken));
         }
         #endregion
 
@@ -165,10 +199,11 @@ namespace IPFSLocalNetwork
             return Ipfs.Swarm.PeersAsync();
         }
 
-        //public void AddBootStrapPeer(string peerId)
-        //{
-        //    ipfsClient.Bootstrap.AddAsync();
-        //}
+        public Task ConnectToPeerAsync(MultiAddress address)
+        {
+            return Ipfs.Swarm.ConnectAsync(address);
+        }
+
 
         public Task<IEnumerable<MultiAddress>> ListBootStraAsync()
         {
@@ -177,7 +212,7 @@ namespace IPFSLocalNetwork
         #endregion
 
         #region bootstrap
-        public Task AddToBootStapAsync(string address)
+        public Task AddToBootStapAsync(MultiAddress address)
         {
             return Ipfs.Bootstrap.AddAsync(address);
         }

@@ -38,19 +38,21 @@
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.rich_txt_stat = new System.Windows.Forms.RichTextBox();
             this.chck_run_offline = new System.Windows.Forms.CheckBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.lbl_Downlaod_progress = new System.Windows.Forms.Label();
+            this.lbl_uplaod_progress = new System.Windows.Forms.Label();
             this.btn_clear_unpinned = new System.Windows.Forms.Button();
             this.chck_pin_upload_file = new System.Windows.Forms.CheckBox();
-            this.chck_pin_upload_dir = new System.Windows.Forms.CheckBox();
-            this.txt_upload_directory_hash = new System.Windows.Forms.TextBox();
-            this.btn_upload_directory = new System.Windows.Forms.Button();
             this.chck_pin_download = new System.Windows.Forms.CheckBox();
             this.txt_upload_file_hash = new System.Windows.Forms.TextBox();
             this.txt_download_hash = new System.Windows.Forms.TextBox();
             this.btn_Download = new System.Windows.Forms.Button();
             this.btn_upload_file = new System.Windows.Forms.Button();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.btn_peer_connect = new System.Windows.Forms.Button();
+            this.txt_peerAddress = new System.Windows.Forms.TextBox();
             this.list_peers = new System.Windows.Forms.ListBox();
             this.btn_ListPeers = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -67,11 +69,14 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.rich_txt_stat = new System.Windows.Forms.RichTextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.label1 = new System.Windows.Forms.Label();
-            this.lbl_uplaod_progress = new System.Windows.Forms.Label();
-            this.lbl_Downlaod_progress = new System.Windows.Forms.Label();
+            this.btn_list_local_files = new System.Windows.Forms.Button();
+            this.grid_files = new System.Windows.Forms.DataGridView();
+            this.ParentId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FileId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FileSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DeleteFile = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.grid_Log)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -79,6 +84,7 @@
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabControl2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.grid_files)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_Info
@@ -158,7 +164,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(680, 354);
+            this.tabControl1.Size = new System.Drawing.Size(843, 347);
             this.tabControl1.TabIndex = 11;
             // 
             // tabPage5
@@ -172,10 +178,18 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(672, 328);
+            this.tabPage5.Size = new System.Drawing.Size(835, 328);
             this.tabPage5.TabIndex = 2;
             this.tabPage5.Text = "Node";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // rich_txt_stat
+            // 
+            this.rich_txt_stat.Location = new System.Drawing.Point(389, 30);
+            this.rich_txt_stat.Name = "rich_txt_stat";
+            this.rich_txt_stat.Size = new System.Drawing.Size(324, 109);
+            this.rich_txt_stat.TabIndex = 7;
+            this.rich_txt_stat.Text = "";
             // 
             // chck_run_offline
             // 
@@ -189,14 +203,12 @@
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.grid_files);
+            this.tabPage6.Controls.Add(this.btn_list_local_files);
             this.tabPage6.Controls.Add(this.lbl_Downlaod_progress);
             this.tabPage6.Controls.Add(this.lbl_uplaod_progress);
-            this.tabPage6.Controls.Add(this.label1);
             this.tabPage6.Controls.Add(this.btn_clear_unpinned);
             this.tabPage6.Controls.Add(this.chck_pin_upload_file);
-            this.tabPage6.Controls.Add(this.chck_pin_upload_dir);
-            this.tabPage6.Controls.Add(this.txt_upload_directory_hash);
-            this.tabPage6.Controls.Add(this.btn_upload_directory);
             this.tabPage6.Controls.Add(this.chck_pin_download);
             this.tabPage6.Controls.Add(this.txt_upload_file_hash);
             this.tabPage6.Controls.Add(this.txt_download_hash);
@@ -205,16 +217,34 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Size = new System.Drawing.Size(672, 328);
+            this.tabPage6.Size = new System.Drawing.Size(835, 321);
             this.tabPage6.TabIndex = 3;
             this.tabPage6.Text = "Files";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
+            // lbl_Downlaod_progress
+            // 
+            this.lbl_Downlaod_progress.AutoSize = true;
+            this.lbl_Downlaod_progress.Location = new System.Drawing.Point(607, 69);
+            this.lbl_Downlaod_progress.Name = "lbl_Downlaod_progress";
+            this.lbl_Downlaod_progress.Size = new System.Drawing.Size(35, 13);
+            this.lbl_Downlaod_progress.TabIndex = 12;
+            this.lbl_Downlaod_progress.Text = "label2";
+            // 
+            // lbl_uplaod_progress
+            // 
+            this.lbl_uplaod_progress.AutoSize = true;
+            this.lbl_uplaod_progress.Location = new System.Drawing.Point(607, 26);
+            this.lbl_uplaod_progress.Name = "lbl_uplaod_progress";
+            this.lbl_uplaod_progress.Size = new System.Drawing.Size(35, 13);
+            this.lbl_uplaod_progress.TabIndex = 11;
+            this.lbl_uplaod_progress.Text = "label2";
+            // 
             // btn_clear_unpinned
             // 
-            this.btn_clear_unpinned.Location = new System.Drawing.Point(288, 222);
+            this.btn_clear_unpinned.Location = new System.Drawing.Point(208, 113);
             this.btn_clear_unpinned.Name = "btn_clear_unpinned";
-            this.btn_clear_unpinned.Size = new System.Drawing.Size(176, 42);
+            this.btn_clear_unpinned.Size = new System.Drawing.Size(158, 29);
             this.btn_clear_unpinned.TabIndex = 9;
             this.btn_clear_unpinned.Text = "Clear unpinned";
             this.btn_clear_unpinned.UseVisualStyleBackColor = true;
@@ -225,7 +255,7 @@
             this.chck_pin_upload_file.AutoSize = true;
             this.chck_pin_upload_file.Checked = true;
             this.chck_pin_upload_file.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chck_pin_upload_file.Location = new System.Drawing.Point(420, 46);
+            this.chck_pin_upload_file.Location = new System.Drawing.Point(420, 22);
             this.chck_pin_upload_file.Margin = new System.Windows.Forms.Padding(2);
             this.chck_pin_upload_file.Name = "chck_pin_upload_file";
             this.chck_pin_upload_file.Size = new System.Drawing.Size(44, 17);
@@ -233,47 +263,10 @@
             this.chck_pin_upload_file.Text = "Pin ";
             this.chck_pin_upload_file.UseVisualStyleBackColor = true;
             // 
-            // chck_pin_upload_dir
-            // 
-            this.chck_pin_upload_dir.AutoSize = true;
-            this.chck_pin_upload_dir.Checked = true;
-            this.chck_pin_upload_dir.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chck_pin_upload_dir.Location = new System.Drawing.Point(420, 101);
-            this.chck_pin_upload_dir.Margin = new System.Windows.Forms.Padding(2);
-            this.chck_pin_upload_dir.Name = "chck_pin_upload_dir";
-            this.chck_pin_upload_dir.Size = new System.Drawing.Size(44, 17);
-            this.chck_pin_upload_dir.TabIndex = 7;
-            this.chck_pin_upload_dir.Text = "Pin ";
-            this.chck_pin_upload_dir.UseVisualStyleBackColor = true;
-            this.chck_pin_upload_dir.Visible = false;
-            // 
-            // txt_upload_directory_hash
-            // 
-            this.txt_upload_directory_hash.Location = new System.Drawing.Point(16, 98);
-            this.txt_upload_directory_hash.Margin = new System.Windows.Forms.Padding(2);
-            this.txt_upload_directory_hash.Name = "txt_upload_directory_hash";
-            this.txt_upload_directory_hash.ReadOnly = true;
-            this.txt_upload_directory_hash.Size = new System.Drawing.Size(386, 20);
-            this.txt_upload_directory_hash.TabIndex = 6;
-            this.txt_upload_directory_hash.Text = "Upload hash";
-            this.txt_upload_directory_hash.Visible = false;
-            // 
-            // btn_upload_directory
-            // 
-            this.btn_upload_directory.Location = new System.Drawing.Point(468, 97);
-            this.btn_upload_directory.Margin = new System.Windows.Forms.Padding(2);
-            this.btn_upload_directory.Name = "btn_upload_directory";
-            this.btn_upload_directory.Size = new System.Drawing.Size(124, 29);
-            this.btn_upload_directory.TabIndex = 5;
-            this.btn_upload_directory.Text = "Upload directory";
-            this.btn_upload_directory.UseVisualStyleBackColor = true;
-            this.btn_upload_directory.Visible = false;
-            this.btn_upload_directory.Click += new System.EventHandler(this.btn_upload_directory_Click);
-            // 
             // chck_pin_download
             // 
             this.chck_pin_download.AutoSize = true;
-            this.chck_pin_download.Location = new System.Drawing.Point(420, 147);
+            this.chck_pin_download.Location = new System.Drawing.Point(420, 65);
             this.chck_pin_download.Margin = new System.Windows.Forms.Padding(2);
             this.chck_pin_download.Name = "chck_pin_download";
             this.chck_pin_download.Size = new System.Drawing.Size(44, 17);
@@ -283,7 +276,7 @@
             // 
             // txt_upload_file_hash
             // 
-            this.txt_upload_file_hash.Location = new System.Drawing.Point(16, 44);
+            this.txt_upload_file_hash.Location = new System.Drawing.Point(16, 20);
             this.txt_upload_file_hash.Margin = new System.Windows.Forms.Padding(2);
             this.txt_upload_file_hash.Name = "txt_upload_file_hash";
             this.txt_upload_file_hash.ReadOnly = true;
@@ -293,7 +286,7 @@
             // 
             // txt_download_hash
             // 
-            this.txt_download_hash.Location = new System.Drawing.Point(16, 150);
+            this.txt_download_hash.Location = new System.Drawing.Point(16, 68);
             this.txt_download_hash.Margin = new System.Windows.Forms.Padding(2);
             this.txt_download_hash.Name = "txt_download_hash";
             this.txt_download_hash.Size = new System.Drawing.Size(386, 20);
@@ -301,7 +294,7 @@
             // 
             // btn_Download
             // 
-            this.btn_Download.Location = new System.Drawing.Point(468, 143);
+            this.btn_Download.Location = new System.Drawing.Point(468, 61);
             this.btn_Download.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Download.Name = "btn_Download";
             this.btn_Download.Size = new System.Drawing.Size(124, 28);
@@ -312,7 +305,7 @@
             // 
             // btn_upload_file
             // 
-            this.btn_upload_file.Location = new System.Drawing.Point(468, 44);
+            this.btn_upload_file.Location = new System.Drawing.Point(468, 20);
             this.btn_upload_file.Margin = new System.Windows.Forms.Padding(2);
             this.btn_upload_file.Name = "btn_upload_file";
             this.btn_upload_file.Size = new System.Drawing.Size(124, 29);
@@ -323,16 +316,35 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.btn_peer_connect);
+            this.tabPage1.Controls.Add(this.txt_peerAddress);
             this.tabPage1.Controls.Add(this.list_peers);
             this.tabPage1.Controls.Add(this.btn_ListPeers);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(672, 328);
+            this.tabPage1.Size = new System.Drawing.Size(835, 328);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Peers";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // btn_peer_connect
+            // 
+            this.btn_peer_connect.Location = new System.Drawing.Point(540, 277);
+            this.btn_peer_connect.Name = "btn_peer_connect";
+            this.btn_peer_connect.Size = new System.Drawing.Size(121, 20);
+            this.btn_peer_connect.TabIndex = 12;
+            this.btn_peer_connect.Text = "Connect to peer";
+            this.btn_peer_connect.UseVisualStyleBackColor = true;
+            this.btn_peer_connect.Click += new System.EventHandler(this.btn_peer_connect_Click);
+            // 
+            // txt_peerAddress
+            // 
+            this.txt_peerAddress.Location = new System.Drawing.Point(5, 277);
+            this.txt_peerAddress.Name = "txt_peerAddress";
+            this.txt_peerAddress.Size = new System.Drawing.Size(520, 20);
+            this.txt_peerAddress.TabIndex = 11;
             // 
             // list_peers
             // 
@@ -340,7 +352,7 @@
             this.list_peers.Location = new System.Drawing.Point(4, 41);
             this.list_peers.Margin = new System.Windows.Forms.Padding(2);
             this.list_peers.Name = "list_peers";
-            this.list_peers.Size = new System.Drawing.Size(657, 303);
+            this.list_peers.Size = new System.Drawing.Size(657, 225);
             this.list_peers.TabIndex = 10;
             this.list_peers.DoubleClick += new System.EventHandler(this.list_peers_DoubleClick);
             // 
@@ -368,7 +380,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Size = new System.Drawing.Size(672, 328);
+            this.tabPage2.Size = new System.Drawing.Size(835, 328);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Bootstrap";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -483,46 +495,70 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // rich_txt_stat
-            // 
-            this.rich_txt_stat.Location = new System.Drawing.Point(389, 30);
-            this.rich_txt_stat.Name = "rich_txt_stat";
-            this.rich_txt_stat.Size = new System.Drawing.Size(265, 115);
-            this.rich_txt_stat.TabIndex = 7;
-            this.rich_txt_stat.Text = "";
-            // 
             // timer1
             // 
             this.timer1.Enabled = true;
             this.timer1.Interval = 5000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // label1
+            // btn_list_local_files
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(24, 18);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "label1";
+            this.btn_list_local_files.Location = new System.Drawing.Point(16, 113);
+            this.btn_list_local_files.Name = "btn_list_local_files";
+            this.btn_list_local_files.Size = new System.Drawing.Size(158, 29);
+            this.btn_list_local_files.TabIndex = 13;
+            this.btn_list_local_files.Text = "List local files";
+            this.btn_list_local_files.UseVisualStyleBackColor = true;
+            this.btn_list_local_files.Click += new System.EventHandler(this.btn_list_local_files_Click);
             // 
-            // lbl_uplaod_progress
+            // grid_files
             // 
-            this.lbl_uplaod_progress.AutoSize = true;
-            this.lbl_uplaod_progress.Location = new System.Drawing.Point(607, 50);
-            this.lbl_uplaod_progress.Name = "lbl_uplaod_progress";
-            this.lbl_uplaod_progress.Size = new System.Drawing.Size(35, 13);
-            this.lbl_uplaod_progress.TabIndex = 11;
-            this.lbl_uplaod_progress.Text = "label2";
+            this.grid_files.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ParentId,
+            this.FileId,
+            this.FileName,
+            this.FileSize,
+            this.DeleteFile});
+            this.grid_files.Location = new System.Drawing.Point(3, 148);
+            this.grid_files.Name = "grid_files";
+            this.grid_files.ReadOnly = true;
+            this.grid_files.Size = new System.Drawing.Size(803, 163);
+            this.grid_files.TabIndex = 14;
+            this.grid_files.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_files_CellContentClick);
             // 
-            // lbl_Downlaod_progress
+            // ParentId
             // 
-            this.lbl_Downlaod_progress.AutoSize = true;
-            this.lbl_Downlaod_progress.Location = new System.Drawing.Point(607, 151);
-            this.lbl_Downlaod_progress.Name = "lbl_Downlaod_progress";
-            this.lbl_Downlaod_progress.Size = new System.Drawing.Size(35, 13);
-            this.lbl_Downlaod_progress.TabIndex = 12;
-            this.lbl_Downlaod_progress.Text = "label2";
+            this.ParentId.HeaderText = "Parent Id";
+            this.ParentId.Name = "ParentId";
+            this.ParentId.ReadOnly = true;
+            this.ParentId.Width = 220;
+            // 
+            // FileId
+            // 
+            this.FileId.HeaderText = "Id";
+            this.FileId.Name = "FileId";
+            this.FileId.ReadOnly = true;
+            this.FileId.Width = 220;
+            // 
+            // FileName
+            // 
+            this.FileName.HeaderText = "Name";
+            this.FileName.Name = "FileName";
+            this.FileName.ReadOnly = true;
+            this.FileName.Width = 150;
+            // 
+            // FileSize
+            // 
+            this.FileSize.HeaderText = "Size";
+            this.FileSize.Name = "FileSize";
+            this.FileSize.ReadOnly = true;
+            // 
+            // DeleteFile
+            // 
+            this.DeleteFile.HeaderText = "Delete";
+            this.DeleteFile.Name = "DeleteFile";
+            this.DeleteFile.ReadOnly = true;
+            this.DeleteFile.Width = 50;
             // 
             // Form1
             // 
@@ -543,9 +579,11 @@
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tabControl2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.grid_files)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -583,18 +621,23 @@
         private System.Windows.Forms.Button btn_reset_bootstrap;
         private System.Windows.Forms.Button btn_remove_all_bootstrap;
         private System.Windows.Forms.CheckBox chck_pin_download;
-        private System.Windows.Forms.TextBox txt_upload_directory_hash;
-        private System.Windows.Forms.Button btn_upload_directory;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.CheckBox chck_pin_upload_file;
-        private System.Windows.Forms.CheckBox chck_pin_upload_dir;
         private System.Windows.Forms.Button btn_clear_unpinned;
         private System.Windows.Forms.CheckBox chck_run_offline;
         private System.Windows.Forms.RichTextBox rich_txt_stat;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label lbl_uplaod_progress;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lbl_Downlaod_progress;
+        private System.Windows.Forms.Button btn_peer_connect;
+        private System.Windows.Forms.TextBox txt_peerAddress;
+        private System.Windows.Forms.Button btn_list_local_files;
+        private System.Windows.Forms.DataGridView grid_files;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ParentId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FileId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FileName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FileSize;
+        private System.Windows.Forms.DataGridViewButtonColumn DeleteFile;
     }
 }
 
